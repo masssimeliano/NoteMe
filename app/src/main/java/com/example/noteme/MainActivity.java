@@ -154,8 +154,8 @@ public class MainActivity extends AppCompatActivity {
         layoutParams1.setMargins(15,0,15,0);
 
         ImageView mIVDeleteNote = new ImageView(MainActivity.this);
-        mIVDeleteNote.setBackground(getDrawable(R.drawable.rubbish_bin_sign));
         mIVDeleteNote.setLayoutParams(layoutParams1);
+        mIVDeleteNote.setBackground(getDrawable(R.drawable.rubbish_bin_sign));
 
         ImageView mIVRefactorNote = new ImageView(MainActivity.this);
         mIVRefactorNote.setBackground(getDrawable(R.drawable.refactor_sign));
