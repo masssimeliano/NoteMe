@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
                             rowCount = rowCount + 1;
 
-                            Toast.makeText(MainActivity.this, "Успішно було додано нову нотатку", Toast.LENGTH_LONG).show();
+                            Toast.makeText(MainActivity.this, "Успішно додано нотатку", Toast.LENGTH_LONG).show();
                         }
                         else
                            Toast.makeText(MainActivity.this, "Не всі поля заповнені!", Toast.LENGTH_SHORT).show();
@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
 
                             mDialogNote.dismiss();
 
-                            Toast.makeText(MainActivity.this, "Зміни в записі успішно збережені", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Успішно збережено зміни", Toast.LENGTH_LONG).show();
                         }
                         else
                             Toast.makeText(MainActivity.this, "Не всі поля заповнені!", Toast.LENGTH_SHORT).show();
