@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -27,10 +28,12 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mIVAddNote;
     private LinearLayout mLL;
 
-    private Dialog mDialog;
+    private Dialog mDialogNote, mDialogDelete;
 
     private EditText mETHeadLine, mETText;
     private ImageView mIVCloseDialog, mIVSaveNote;
+
+    private Button mBYes, mBNo;
 
     private DBHelper dbHelper;
     private SQLiteDatabase db;
@@ -46,16 +49,25 @@ public class MainActivity extends AppCompatActivity {
         mIVAddNote = (ImageView) findViewById(R.id.mIVAddNote);
         mLL = (LinearLayout) findViewById(R.id.mLL);
 
-        mDialog = new Dialog(MainActivity.this);
-        mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mDialog.setContentView(R.layout.dialog_window_note);
-        mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        mDialog.setCancelable(false);
+        mDialogNote = new Dialog(MainActivity.this);
+        mDialogNote.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialogNote.setContentView(R.layout.dialog_window_note);
+        mDialogNote.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mDialogNote.setCancelable(false);
 
-        mETHeadLine = (EditText) mDialog.findViewById(R.id.mETHeadLine);
-        mETText = (EditText) mDialog.findViewById(R.id.mETText);
-        mIVCloseDialog = (ImageView) mDialog.findViewById(R.id.mIVCloseDialog);
-        mIVSaveNote = (ImageView) mDialog.findViewById(R.id.mIVSaveNote);
+        mETHeadLine = (EditText) mDialogNote.findViewById(R.id.mETHeadLine);
+        mETText = (EditText) mDialogNote.findViewById(R.id.mETText);
+        mIVCloseDialog = (ImageView) mDialogNote.findViewById(R.id.mIVCloseDialog);
+        mIVSaveNote = (ImageView) mDialogNote.findViewById(R.id.mIVSaveNote);
+
+        mDialogDelete = new Dialog(MainActivity.this);
+        mDialogDelete.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDialogDelete.setContentView(R.layout.dialog_window_delete_note);
+        mDialogDelete.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mDialogDelete.setCancelable(false);
+
+        mBYes = (Button) mDialogDelete.findViewById(R.id.mBYes);
+        mBNo = (Button) mDialogDelete.findViewById(R.id.mBNo);
 
         dbHelper = new DBHelper(this);
         db = dbHelper.getWritableDatabase();
@@ -78,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 mETHeadLine.setText("");
                 mETText.setText("");
 
-                mDialog.show();
+                mDialogNote.show();
 
                 mIVSaveNote.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -89,17 +101,11 @@ public class MainActivity extends AppCompatActivity {
                         if ((HeadLine.toString().length() != 0) && (Text.toString().length() != 0)) {
                             mTVNoText.setVisibility(View.INVISIBLE);
 
-                            long ID = addNoteToDataBase(HeadLine, Text);
+                            long id = addNoteToDataBase(HeadLine, Text);
 
-                            StringBuffer HeadLineCopy = new StringBuffer();
-                            if (HeadLine.toString().length() > 19)
-                                HeadLineCopy.append(HeadLine.substring(0,16) + "...");
-                            else
-                                HeadLineCopy.append(HeadLine);
+                            addNoteToLL(new StringBuffer(HeadLine), id);
 
-                            addNoteToLL(new StringBuffer(HeadLineCopy), new StringBuffer(Text), ID);
-
-                            mDialog.dismiss();
+                            mDialogNote.dismiss();
 
                             rowCount = rowCount + 1;
 
@@ -113,14 +119,14 @@ public class MainActivity extends AppCompatActivity {
                 mIVCloseDialog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mDialog.dismiss();
+                        mDialogNote.dismiss();
                     }
                 });
             }
         });
     }
 
-    // Метод для добавления нового элемента в БД
+    // Метод для добавления нового элемента в БД (Возвращает ID вставленного ряда)
     private long addNoteToDataBase(StringBuffer mSBHeadLine, StringBuffer mSBText) {
         ContentValues cv = new ContentValues();
 
@@ -140,14 +146,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Метод для формирования LLCopy с элементом БД и добавлением его в LL
-    private void addNoteToLL(final StringBuffer mSBHeadLine, final StringBuffer mSBText, final long ID) {
+    private void addNoteToLL(final StringBuffer mSBHeadLine, final long id) {
+        // Формулирование LL с заметкой - Начало
         LinearLayout.LayoutParams layoutParams0 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
         layoutParams0.setMargins(15,0,15,0);
         layoutParams0.weight = 1;
 
-        TextView mTVHeadLine = new TextView(MainActivity.this);
+        StringBuffer mSBHeadLineCopy = new StringBuffer();
+        if (mSBHeadLine.length() > 20)
+            mSBHeadLineCopy.append(mSBHeadLine.substring(0,16) + "...");
+        else
+            mSBHeadLineCopy.append(mSBHeadLine);
+
+        final TextView mTVHeadLine = new TextView(MainActivity.this);
         mTVHeadLine.setTextSize(18);
-        mTVHeadLine.setText(mSBHeadLine.toString());
+        mTVHeadLine.setText(mSBHeadLineCopy);
         mTVHeadLine.setLayoutParams(layoutParams0);
 
         LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(120, 120);
@@ -173,32 +186,64 @@ public class MainActivity extends AppCompatActivity {
 
         mLL.addView(mLLCopy, 0);
 
+        // Формулирование LL с заметкой - Конец
+
+
+        // Кнопка "Удалить"
         mIVDeleteNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mLL.removeView(mLLCopy);
+                mDialogDelete.show();
 
-                deleteNoteFromDataBase(ID);
+                mBYes.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mLL.removeView(mLLCopy);
 
-                rowCount = rowCount - 1;
+                        deleteNoteFromDataBase(id);
 
-                if (rowCount == 0 )
-                    mTVNoText.setVisibility(View.VISIBLE);
+                        rowCount = rowCount - 1;
+
+                        if (rowCount == 0 )
+                            mTVNoText.setVisibility(View.VISIBLE);
+
+                        mDialogDelete.dismiss();
+                    }
+                });
+
+                mBNo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mDialogDelete.dismiss();
+                    }
+                });
             }
         });
 
+        // Кнопка "Изменить"
         mIVRefactorNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mETHeadLine.setText(mSBHeadLine.toString());
-                mETText.setText(mSBText.toString());
+                Cursor cursor = db.query("NotesTable", null, null, null, null, null, null);
 
-                mDialog.show();
+                int idColumnIndex = cursor.getColumnIndex("ID");
+                int headLineColumnIndex = cursor.getColumnIndex("HeadLine");
+                int textColumnIndex = cursor.getColumnIndex("Text");
+
+                // Нахождения подходящего ID заметки
+                do {
+                }
+                while ((cursor.moveToNext()) && (cursor.getLong(idColumnIndex) != id));
+
+                mETHeadLine.setText(cursor.getString(headLineColumnIndex));
+                mETText.setText(cursor.getString(textColumnIndex));
+
+                mDialogNote.show();
 
                 mIVCloseDialog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mDialog.dismiss();
+                        mDialogNote.dismiss();
                     }
                 });
 
@@ -211,16 +256,17 @@ public class MainActivity extends AppCompatActivity {
                         if ((headLine.toString().length() != 0) && (text.toString().length() != 0)) {
                             ContentValues cv = new ContentValues();
 
-                            cv.put("HeadLine", mETHeadLine.getText().toString());
-                            cv.put("Text", mETText.getText().toString());
+                            cv.put("HeadLine", headLine.toString());
+                            cv.put("Text", text.toString());
 
-                            db.update("NotesTable", cv, "ID = " + ID, null);
+                            db.update("NotesTable", cv, "ID = " + id, null);
 
-                            mLL.removeAllViews();
+                            if (headLine.length() > 20)
+                                mTVHeadLine.setText(headLine.substring(0, 16) + "...");
+                            else
+                                mTVHeadLine.setText(headLine);
 
-                            showAllDataBase();
-
-                            mDialog.dismiss();
+                            mDialogNote.dismiss();
 
                             Toast.makeText(MainActivity.this, "Зміни в записі успішно збережені", Toast.LENGTH_SHORT).show();
                         }
@@ -234,12 +280,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Метод для удаления определенного элемента БД по ID
-    private void deleteNoteFromDataBase(long ID) {
-        db.delete("NotesTable", "ID = " + ID, null);
+    private void deleteNoteFromDataBase(long id) {
+        db.delete("NotesTable", "ID = " + id, null);
 
+        // Вывод в Log ID удаленного ряда
         Log.d("DataBase"," ");
         Log.d("DataBase", "Deleted Note From DataBase");
-        Log.d("DataBase", "Row Deleted : ID = " + Long.toString(ID));
+        Log.d("DataBase", "Row Deleted : ID = " + Long.toString(id));
         Log.d("DataBase"," ");
     }
 
@@ -248,27 +295,26 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = db.query("NotesTable", null, null, null, null, null, null);
 
         if (cursor.moveToFirst()) {
-            int idColIndex = cursor.getColumnIndex("ID");
-            int headLineColIndex  = cursor.getColumnIndex("HeadLine");
-            int textColIndex  = cursor.getColumnIndex("Text");
+            int idColumnIndex = cursor.getColumnIndex("ID");
+            int headLineColumnIndex  = cursor.getColumnIndex("HeadLine");
 
             do {
-                long id = cursor.getLong(idColIndex);
-                StringBuffer headLine = new StringBuffer(cursor.getString(headLineColIndex));
-                StringBuffer text = new StringBuffer(cursor.getString(textColIndex));
+                long id = cursor.getLong(idColumnIndex);
+                StringBuffer headLine = new StringBuffer(cursor.getString(headLineColumnIndex));
 
+                // Формирования названия заметки (С длинной <=20)
                 StringBuffer headLineCopy = new StringBuffer();
-                if (headLine.toString().length() > 19)
+                if (headLine.toString().length() > 20)
                     headLineCopy.append(headLine.substring(0, 16) + "...");
                 else
                     headLineCopy.append(headLine);
 
-                addNoteToLL(new StringBuffer(headLineCopy), text, id);
+                addNoteToLL(new StringBuffer(headLineCopy), id);
             }
             while (cursor.moveToNext());
-
-            cursor.close();
         }
+
+        cursor.close();
     }
 
     // Вспомогательный метод для вывода всей информации о БД
@@ -278,16 +324,21 @@ public class MainActivity extends AppCompatActivity {
         Log.d("DataBase", " ");
         Log.d("DataBase", "Rows in NotesTable : ");
 
+        // Чтение до всей БД и вывод все в Log
         if (cursor.moveToFirst()) {
-            int idColIndex = cursor.getColumnIndex("ID");
-            int headLineColIndex = cursor.getColumnIndex("HeadLine");
-            int textColIndex = cursor.getColumnIndex("Text");
+            int idColumnIndex = cursor.getColumnIndex("ID");
+            int headLineColumnIndex = cursor.getColumnIndex("HeadLine");
+            int textColumnIndex = cursor.getColumnIndex("Text");
 
             do {
+                long id = cursor.getLong(idColumnIndex);
+                StringBuffer headLine = new StringBuffer(cursor.getString(headLineColumnIndex));
+                StringBuffer text = new StringBuffer(cursor.getString(textColumnIndex));
+
                 Log.d("DataBase", " ");
-                Log.d("DataBase", "ID = " + cursor.getLong(idColIndex));
-                Log.d("DataBase", "HeadLine = " + cursor.getString(headLineColIndex));
-                Log.d("DataBase", "Text = " + cursor.getString(textColIndex));
+                Log.d("DataBase", "ID = " + Long.toString(id));
+                Log.d("DataBase", "HeadLine = " + headLine);
+                Log.d("DataBase", "Text = " + text);
                 Log.d("DataBase", " ");
             }
             while (cursor.moveToNext());

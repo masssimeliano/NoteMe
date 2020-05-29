@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="15dp"
-        android:background="@drawable/corner_radius"
+        android:background="@drawable/corner_radius_scrollview"
         app:layout_constraintBottom_toTopOf="@+id/mIVAddNote"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -24,6 +24,7 @@
             android:id="@+id/mLL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="15dp"
             android:orientation="vertical" />
     </ScrollView>
 
