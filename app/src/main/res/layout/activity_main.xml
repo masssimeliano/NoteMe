@@ -32,7 +32,7 @@
         android:id="@+id/mTVNoText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No Notes"
+        android:text="Без записів"
         android:textSize="30dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/mSV"

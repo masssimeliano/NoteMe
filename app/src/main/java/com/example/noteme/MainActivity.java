@@ -35,7 +35,9 @@ public class MainActivity extends AppCompatActivity {
 
     private Button mBYes, mBNo;
 
+    // Объект для создания и управления версиями БД
     private DBHelper dbHelper;
+    // Подключание к БД
     private SQLiteDatabase db;
 
     private long rowCount;
@@ -224,6 +226,8 @@ public class MainActivity extends AppCompatActivity {
         mIVRefactorNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Запрос всех данных из таблицы
+                // Получение Cursor
                 Cursor cursor = db.query("NotesTable", null, null, null, null, null, null);
 
                 int idColumnIndex = cursor.getColumnIndex("ID");
@@ -254,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
                         StringBuffer text = new StringBuffer(mETText.getText());
 
                         if ((headLine.toString().length() != 0) && (text.toString().length() != 0)) {
+                            // Объект для данных
                             ContentValues cv = new ContentValues();
 
                             cv.put("HeadLine", headLine.toString());
@@ -294,6 +299,8 @@ public class MainActivity extends AppCompatActivity {
     private void showAllDataBase() {
         Cursor cursor = db.query("NotesTable", null, null, null, null, null, null);
 
+        // Становление позиции курсора на первую строку выборки
+        // Получение значения по номерам столбцов
         if (cursor.moveToFirst()) {
             int idColumnIndex = cursor.getColumnIndex("ID");
             int headLineColumnIndex  = cursor.getColumnIndex("HeadLine");
