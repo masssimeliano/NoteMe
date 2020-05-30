@@ -14,7 +14,7 @@
         android:layout_height="0dp"
         android:layout_margin="15dp"
         android:background="@drawable/corner_radius_scrollview"
-        app:layout_constraintBottom_toTopOf="@+id/mIVAddNote"
+        app:layout_constraintBottom_toTopOf="@+id/mFABAddNote"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,13 +40,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/mSV" />
 
-    <ImageView
-        android:id="@+id/mIVAddNote"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_margin="15dp"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/mFABAddNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
         android:src="@drawable/add_sign"
+        android:layout_margin="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

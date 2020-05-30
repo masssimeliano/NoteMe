@@ -21,11 +21,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private TextView mTVNoText;
-    private ImageView mIVAddNote;
+    private FloatingActionButton mFABAddNote;
     private LinearLayout mLL;
 
     private Dialog mDialogNote, mDialogDelete;
@@ -48,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mTVNoText = (TextView) findViewById(R.id.mTVNoText);
-        mIVAddNote = (ImageView) findViewById(R.id.mIVAddNote);
+        mFABAddNote = findViewById(R.id.mFABAddNote);
         mLL = (LinearLayout) findViewById(R.id.mLL);
 
         mDialogNote = new Dialog(MainActivity.this);
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         else
             mTVNoText.setVisibility(View.VISIBLE);
 
-        mIVAddNote.setOnClickListener(new View.OnClickListener() {
+        mFABAddNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mETHeadLine.setText("");
@@ -187,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
         mLLCopy.setLayoutParams(layoutParams2);
 
         mLL.addView(mLLCopy, 0);
-
         // Формулирование LL с заметкой - Конец
 
 

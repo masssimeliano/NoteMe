@@ -38,6 +38,8 @@
             android:layout_margin="15dp"
             android:background="@color/colorGreen"
             android:text="Так"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -49,7 +51,8 @@
             android:background="@color/colorRed"
             android:baselineAligned="false"
             android:text="Ні"
-
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
